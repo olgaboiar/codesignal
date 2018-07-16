@@ -16,12 +16,10 @@ BEGIN
    (SELECT @x:=@x+1 AS r, name AS name FROM pets) x
    LEFT JOIN
    (SELECT @a:=@a+1 AS r, name AS cats FROM pets WHERE species = "cat") a
-   ON
-   x.r = a.r
+   ON x.r = a.r
    LEFT JOIN
    (SELECT @b:=@b+1 AS r, name AS dogs FROM pets WHERE species = "dog") b
-   ON
-   x.r = b.r
+   ON x.r = b.r
    LEFT JOIN
    (SELECT @c:=@c+1 AS r, name AS weasels FROM pets WHERE species = "weasel") c
    ON x.r = c.r
