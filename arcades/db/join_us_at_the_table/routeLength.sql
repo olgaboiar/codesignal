@@ -1,6 +1,6 @@
 CREATE PROCEDURE routeLength()
 BEGIN
-	SET @count := 1;
+    SET @count := 1;
    SET @len := (SELECT COUNT(*) FROM cities);
 
    SET @xa := 0;
