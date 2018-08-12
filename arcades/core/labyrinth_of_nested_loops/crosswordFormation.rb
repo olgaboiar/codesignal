@@ -1,46 +1,48 @@
 def crosswordFormation(words)
-    cnt = 0
-    indicator = words[0]
-    combinations = words.permutation.to_a
-    combinations.each{ |combination|
-        v1 = combination[0]
-        v2 = combination[1]
-        h1 = combination[2]
-        h2 = combination[3]
-        
-        next if(h1 == indicator || h2 == indicator)
-        next if(v1.count(h1) == 0 || v1.count(h2) == 0 || v2.count(h1) == 0 || v2.count(h2) == 0)
-        cnt += 2*countCrosswordLetters(h1,h2,v1,v2)
-    }
-    
-    cnt
+    words.permutation.map do |w|
+        crosswordFormation1 w
+    end.reduce(:+)
 end
 
-def countCrosswordLetters(h1, h2, v1, v2)
-    cnt = 0
+def crosswordFormation1(words)
+    w1 = words[0]
+    w2 = words[1]
     
-    for i in 0..h1.length-1
-        next if(v1.count(h1[i]) == 0)
-        for j in i+2..h1.length-1
-            next if(v2.count(h1[j]) == 0)
-            for k in 0..v1.length-1
-                next if(h1[i] != v1[k])
-                for l in k+2..v1.length-1
-                    for m in 0..v2.length-1
-                        next if(h1[j] != v2[m])
-                        break if(m+l-k >= v2.length)
-                        for n in 0..h2.length-1
-                            break if(n+j-i >= h2.length)
-                            if(v1[l] == h2[n] && v2[m+l-k]==h2[n+j-i])
-
-                                cnt += 1
-                            end
-                        end
-                    end
+    l1 = w1.length
+    l2 = w2.length
+    
+    count = 0
+    w1.chars.each_with_index do |c1, i1|
+        w2.chars.each_with_index do |c2, i2|
+            imax = [l1-i1-1, l2-i2-1].min
+            if imax > 1
+                (2..imax).each do |i|
+                    c3 = w1[i1 + i]
+                    c4 = w2[i2 + i]
+                    count += crosswordFormation2(words[2..3], c1, c2, c3, c4)
                 end
             end
         end
     end
+    count
+end
+
+def crosswordFormation2(words, c1, c2, c3, c4)
+    w1 = words[0]
+    w2 = words[1]
     
-    cnt
+    l1 = w1.length
+    l2 = w2.length
+    
+    jmax = [l1, l2].min
+    return(0) unless jmax > 2
+    (2..jmax).map do |j|
+        fits(w1, c1, c2, j) * fits(w2, c3, c4, j)
+    end.reduce(:+)
+end
+    
+def fits w, c1, c2, j
+    (0..w.length-j).count do |j1|
+        w[j1] == c1 and w[j1 + j] == c2
+    end
 end
