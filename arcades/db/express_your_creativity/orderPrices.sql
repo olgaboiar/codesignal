@@ -1,12 +1,11 @@
-DECLARE i INT;
-   DECLARE result VARCHAR(45);
-   DECLARE tmp_length INT;
+DROP FUNCTION IF EXISTS get_total;
+CREATE FUNCTION get_total(items VARCHAR(45)) RETURNS INT DETERMINISTIC
+BEGIN
+   DECLARE i INT;
    DECLARE t INT;
    DECLARE resulta VARCHAR(45);
    DECLARE end_res INT;
    SET i = 0;
-   SET result = "toto";
-   SET tmp_length = 0;
    set t = 0;
    set resulta = "a";
    SET end_res = 0;
@@ -20,10 +19,17 @@ DECLARE i INT;
           ';', '');
              IF  resulta != "" THEN 
                SET t = (SELECT price from item_prices where id = CAST(resulta AS UNSIGNED));
-            -- INSERT INTO test.d VALUES(CONVERT(t,  CHAR));
             SET end_res = end_res + t;
              END IF;
        SET i = i + 1;
       END WHILE label1;
    END IF;
    RETURN end_res;
+END;
+
+CREATE PROCEDURE orderPrices()
+BEGIN
+    SELECT id, buyer, get_total(items) AS total_price
+    FROM orders
+    ORDER BY id;
+END;
